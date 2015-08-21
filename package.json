@@ -1,7 +1,10 @@
 {
   "name": "url-requester",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Request a url for each line in your CSV",
+  "bin": {
+    "url-requester": "./bin/url-requester"
+  },
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -15,5 +18,7 @@
   "bugs": {
     "url": "https://github.com/gabrielflorit/url-requester/issues"
   },
-  "homepage": "https://github.com/gabrielflorit/url-requester"
+  "homepage": "https://github.com/gabrielflorit/url-requester",
+  "dependencies": {
+  }
 }
