@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/gabrielflorit/url-requester",
   "dependencies": {
+    "nedb": "^1.1.3",
     "yargs": "^3.20.0"
   }
 }

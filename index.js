@@ -1,5 +1,7 @@
 'use strict';
 
+var NeDB = require('nedb');
+var path = require('path');
 var fs = require('fs');
 
 // What to do:
@@ -21,8 +23,16 @@ var argv = require('yargs').option('f', {
 	type: 'string'
 }).argv;
 
-// Read JSON file.
+// Read JSON file
 var file = JSON.parse(fs.readFileSync(argv.file, 'utf8'));
 console.log(JSON.stringify(file, null, 4));
 
-// Is there a db with this name?
+// Get db filename
+var dbFilename = argv.file.split('.')[0] + '.db';
+
+// Connect to db
+// TODO: this assumes file only has one dot
+var db = new NeDB({
+	filename: dbFilename,
+	autoload: true // automatic loading
+});
