@@ -1,5 +1,7 @@
 'use strict';
 
+let inquirer = require('inquirer');
+let isThere = require('is-there');
 let NeDB = require('nedb');
 let path = require('path');
 let fs = require('fs');
@@ -27,17 +29,43 @@ let argv = require('yargs')
 
 // Read JSON file
 let file = JSON.parse(fs.readFileSync(argv.file, 'utf8'));
-console.log(JSON.stringify(file, null, 4));
 
-// Get db filename
+// Make db filename
 let dbFilename = argv.file.split('.')[0] + '.db';
 
-// Connect to db
-// TODO: this assumes file only has one dot
-var db = new NeDB({
-	filename: dbFilename,
-	autoload: true // automatic loading
-});
+// If db file exists,
+// ask user if we should overwrite.
+if (isThere(dbFilename)) {
 
+	inquirer.prompt([
+		{
+			type: 'list',
+			name: 'whatToDo',
+			choices: ['Use existing', 'Create new'],
+			message: 'Use existing database, or create new?'
+		}
+	],
+	function(answers) {
 
+		if (answers.whatToDo === 'Create new') {
+			fs.unlinkSync(dbFilename);
+		}
+
+		connectToDb();
+	});
+}
+
+// This is the "main" program.
+// Obviously this is not the way to do things,
+// but for now it will do.
+// If things turn into callback hell I'll implement Promises.
+function connectToDb() {
+}
+
+// // Connect to db
+// // TODO: this assumes file only has one dot
+// var db = new NeDB({
+// 	filename: dbFilename,
+// 	autoload: true // automatic loading
+// });
 
