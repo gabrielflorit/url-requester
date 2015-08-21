@@ -33,8 +33,17 @@ let file = JSON.parse(fs.readFileSync(argv.file, 'utf8'));
 // Make db filename
 let dbFilename = argv.file.split('.')[0] + '.db';
 
-// If db file exists,
-// ask user if we should overwrite.
+function insertFileIntoDb(file, dbFilename, callback) {
+
+	let db = new NeDB({
+		filename: dbFilename,
+		autoload: true
+	});
+
+	db.insert(file, callback);
+}
+
+// If db file exists ask user if we should overwrite.
 if (isThere(dbFilename)) {
 
 	inquirer.prompt([
@@ -48,11 +57,24 @@ if (isThere(dbFilename)) {
 	function(answers) {
 
 		if (answers.whatToDo === 'Create new') {
+
+			// delete db
 			fs.unlinkSync(dbFilename);
+
+			insertFileIntoDb(file, dbFilename, connectToDb);
+
+		} else {
+
+			connectToDb();
 		}
 
-		connectToDb();
 	});
+} else {
+
+	// Db file does not exist.
+	// Create it and insert file into db.
+	insertFileIntoDb(file, dbFilename, connectToDb);
+
 }
 
 // This is the "main" program.
@@ -60,12 +82,11 @@ if (isThere(dbFilename)) {
 // but for now it will do.
 // If things turn into callback hell I'll implement Promises.
 function connectToDb() {
-}
 
-// // Connect to db
-// // TODO: this assumes file only has one dot
-// var db = new NeDB({
-// 	filename: dbFilename,
-// 	autoload: true // automatic loading
-// });
+	let db = new NeDB({
+		filename: dbFilename,
+		autoload: true
+	});
+
+}
 
