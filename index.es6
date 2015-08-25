@@ -1,5 +1,6 @@
 'use strict';
 
+let d3 = require('d3');
 let inquirer = require('inquirer');
 let isThere = require('is-there');
 let NeDB = require('nedb');
@@ -25,68 +26,94 @@ let argv = require('yargs')
 		describe: 'file name',
 		type: 'string'
 	})
+	.option('r', {
+		alias: 'requestField',
+		demand: false,
+		describe: 'field used to save url request contents',
+		type: 'string',
+		default: 'request'
+	})
 	.argv;
 
-// Read JSON file
-let file = JSON.parse(fs.readFileSync(argv.file, 'utf8'));
+// Read file
+let file = fs.readFileSync(argv.file, 'utf-8');
 
-// Make db filename
-let dbFilename = argv.file.split('.')[0] + '.db';
+// Look at file extension to see if it's CSV or JSON.
+let fileExtension = argv.file.split('.')[1].toLowerCase();
 
-function insertFileIntoDb(file, dbFilename, callback) {
+let records = fileExtension === 'csv' ?
+	d3.csv.parse(file) :
+	JSON.parse(file);
 
-	let db = new NeDB({
-		filename: dbFilename,
-		autoload: true
-	});
+console.log(JSON.stringify(records, null, 4));
 
-	db.insert(file, callback);
-}
+// // Make db filename
+// let dbFilename = argv.file.split('.')[0] + '.db';
 
-// If db file exists ask user if we should overwrite.
-if (isThere(dbFilename)) {
+// function insertFileIntoDb(file, dbFilename, callback) {
 
-	inquirer.prompt([
-		{
-			type: 'list',
-			name: 'whatToDo',
-			choices: ['Use existing', 'Create new'],
-			message: 'Use existing database, or create new?'
-		}
-	],
-	function(answers) {
+// 	let db = new NeDB({
+// 		filename: dbFilename,
+// 		autoload: true
+// 	});
 
-		if (answers.whatToDo === 'Create new') {
+// 	db.insert(file, callback);
+// }
 
-			// delete db
-			fs.unlinkSync(dbFilename);
+// // If db file exists ask user if we should overwrite.
+// if (isThere(dbFilename)) {
 
-			insertFileIntoDb(file, dbFilename, connectToDb);
+// 	inquirer.prompt([
+// 		{
+// 			type: 'list',
+// 			name: 'whatToDo',
+// 			choices: ['Use existing', 'Create new'],
+// 			message: 'Use existing database, or create new?'
+// 		}
+// 	],
+// 	function(answers) {
 
-		} else {
+// 		if (answers.whatToDo === 'Create new') {
 
-			connectToDb();
-		}
+// 			// delete db
+// 			fs.unlinkSync(dbFilename);
 
-	});
-} else {
+// 			insertFileIntoDb(file, dbFilename, connectToDb);
 
-	// Db file does not exist.
-	// Create it and insert file into db.
-	insertFileIntoDb(file, dbFilename, connectToDb);
+// 		} else {
 
-}
+// 			connectToDb();
+// 		}
 
-// This is the "main" program.
-// Obviously this is not the way to do things,
-// but for now it will do.
-// If things turn into callback hell I'll implement Promises.
-function connectToDb() {
+// 	});
+// } else {
 
-	let db = new NeDB({
-		filename: dbFilename,
-		autoload: true
-	});
+// 	// Db file does not exist.
+// 	// Create it and insert file into db.
+// 	insertFileIntoDb(file, dbFilename, connectToDb);
 
-}
+// }
+
+// // This is the "main" program.
+// // Obviously this is not the way to do things,
+// // but for now it will do.
+// // If things turn into callback hell I'll implement Promises.
+// function connectToDb() {
+
+// 	let db = new NeDB({
+// 		filename: dbFilename,
+// 		autoload: true
+// 	});
+
+// 	// find all records that don't have a request field,
+// 	// and make the request
+// 	let requestField = argv.requestField;
+
+// 	db.find({requestField: { $exists: false }}, function(err, docs) {
+
+// 		console.log(JSON.stringify(docs, null, 4));
+
+// 	});
+
+// }
 
