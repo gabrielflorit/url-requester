@@ -1,5 +1,24 @@
 'use strict';
 
+// This will now require a mongodb instance.
+// It will add a "geocode" field based on a template string provided by the user.
+
+let MongoClient = require('mongodb').MongoClient;
+
+MongoClient.connect('mongodb://localhost:27017/data', function(err, db) {
+
+	var collection = db.collection('tickets');
+
+	collection.count({geocode:{$exists:true}}, function(err, records) {
+
+		console.log(JSON.stringify(records, null, 4));
+
+		db.close();
+
+	});
+
+});
+
 // let _ = require('lodash');
 // let d3 = require('d3');
 // let inquirer = require('inquirer');

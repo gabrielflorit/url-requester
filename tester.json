@@ -1,0 +1,20 @@
+[
+  {
+    "town": "waltham", 
+    "state": "ma", 
+    "street": "lowell st", 
+    "number": "230"
+  }, 
+  {
+    "town": "watertown", 
+    "state": "ma", 
+    "street": "summer st", 
+    "number": "195"
+  }, 
+  {
+    "town": "somerville", 
+    "state": "ma", 
+    "street": "sycamore st", 
+    "number": "130"
+  }
+]
