@@ -68,7 +68,9 @@ MongoClient.connect(`mongodb://${argv.host}:${argv.port}/${argv.database}`, func
 
 						if (!error && response.statusCode === 200) {
 
-							collection.updateOne({_id: doc._id}, {$set:{geocode:body}}, function(a, b, c) {
+							var geocode = JSON.parse(body);
+
+							collection.updateOne({_id: doc._id}, {$set:{geocode:geocode}}, function(a, b, c) {
 
 								pace.op();
 								makeARequestOrExit();
